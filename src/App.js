@@ -1,24 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Campaign from "./components/Campaign";
+import withLoading from "./components/withLoading";
 
-function App() {
+const App = () => {
+  const CampaignLoading = withLoading(Campaign)
+  const [appState, setAppState] = useState({loading: false, campaigns: null})
+
+  useEffect(() => {
+      setAppState({loading: true});
+      (async () => {
+          const apiUrl = 'https://cors-anywhere.herokuapp.com/https://us-central1-voting-system-ae0c0.cloudfunctions.net/app/api/campaigns'
+          const campaigns = await axios.get(apiUrl);
+          setAppState({ loading: false, campaigns: campaigns.data });
+      })()
+  }, [setAppState])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  <>
+   <h1>Voting System</h1>
+   <CampaignLoading isLoading={appState.loading} campaigns={appState.campaigns} ></CampaignLoading>
+   </>
   );
 }
 
